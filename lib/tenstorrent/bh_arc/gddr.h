@@ -53,5 +53,6 @@ void MriscRegWrite32(uint8_t gddr_inst, uint32_t addr, uint32_t val);
 uint32_t GetDramMask(void);
 int CheckHwMemtestResult(uint8_t gddr_inst, k_timepoint_t timeout);
 int StartHwMemtest(uint8_t gddr_inst, uint32_t addr_bits, uint32_t start_addr, uint32_t mask);
+void wipe_mrisc_l1(uint8_t tensix_x, uint8_t tensix_y);
 
 #endif

@@ -10,6 +10,7 @@
 #include "init.h"
 #include "noc.h"
 #include "noc2axi.h"
+#include "noc_dma.h"
 #include "reg.h"
 
 #include <tenstorrent/post_code.h>
@@ -26,11 +27,13 @@
 static const struct device *const pll_dev_3 = DEVICE_DT_GET_OR_NULL(DT_NODELABEL(pll3));
 
 /* This is the noc2axi instance we want to run the MRISC FW on */
-#define MRISC_FW_NOC2AXI_PORT 0
-#define MRISC_SETUP_TLB       13
-#define MRISC_L1_ADDR         (1ULL << 37)
-#define MRISC_REG_ADDR        (1ULL << 40)
-#define MRISC_FW_CFG_OFFSET   0x3C00
+#define MRISC_FW_NOC2AXI_PORT  0
+#define NUM_MRISC_NOC2AXI_PORT 3
+#define MRISC_SETUP_TLB        13
+#define MRISC_L1_ADDR          (1ULL << 37)
+#define MRISC_REG_ADDR         (1ULL << 40)
+#define MRISC_FW_CFG_OFFSET    0x3C00
+#define MRISC_L1_SIZE          (128 * 1024)
 
 #define MRISC_FW_TAG     "memfw"
 #define MRISC_FW_CFG_TAG "memfwcfg"
@@ -238,6 +241,21 @@ int CheckHwMemtestResult(uint8_t gddr_inst, k_timepoint_t timeout)
 	return 0;
 }
 
+void wipe_mrisc_l1(uint8_t tensix_x, uint8_t tensix_y)
+{
+	for (uint32_t gddr_inst = 0; gddr_inst < NUM_GDDR; gddr_inst++) {
+		uint32_t dram_mask = GetDramMask();
+		if (IS_BIT_SET(dram_mask, gddr_inst)) {
+			for (uint32_t noc2axi_port = 0; noc2axi_port < NUM_MRISC_NOC2AXI_PORT; noc2axi_port++) {
+				uint8_t x, y;
+				GetGddrNocCoords(gddr_inst, noc2axi_port, noc_id, &x, &y);
+				/* AXI enable must not be set, using MRISC address 0 */	
+				noc_dma_write(tensix_x, tensix_y, 0, x, y, 0, MRISC_L1_SIZE);
+			}
+		}
+	}
+}
+
 static int InitMrisc(void)
 {
 	SetPostCode(POST_CODE_SRC_CMFW, POST_CODE_ARC_INIT_STEP9);
@@ -255,6 +273,9 @@ static int InitMrisc(void)
 			SetAxiEnable(gddr_inst, noc2axi_port, true);
 		}
 	}
+
+	/* wipe MRISC L1 here */
+	wipe_mrisc_l1();
 
 	if (tt_boot_fs_get_file(&boot_fs_data, MRISC_FW_TAG, (uint8_t *)large_sram_buffer,
 				SCRATCHPAD_SIZE, &fw_size) != TT_BOOT_FS_OK) {
