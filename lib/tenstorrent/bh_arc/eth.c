@@ -24,6 +24,7 @@ LOG_MODULE_REGISTER(eth, CONFIG_TT_APP_LOG_LEVEL);
 
 #define ETH_SETUP_TLB  0
 #define ETH_PARAM_ADDR 0x7c000
+#define ERISC_L1_SIZE  (64 * 1024)
 
 #define ETH_RESET_PC_0              0xFFB14000
 #define ETH_END_PC_0                0xFFB14004
@@ -356,6 +357,17 @@ static void EthInit(void)
 			ReleaseEthReset(eth_inst, ring);
 		}
 	}
+}
+
+static void wipe_erisc_l1(uint8_t tensix_x, uint8_t tensix_y)
+{
+	for (uint8_t eth_inst = 0; eth_inst < MAX_ETH_INSTANCES; eth_inst++) {
+		if (tile_enable.eth_enabled & BIT(eth_inst)) {
+			uint8_t x, y;
+			GetEthNocCoords(eth_inst, 0, &x, &y);
+			noc_dma_write(tensix_x, tensix_y, 0, x, y, 0, ERISC_L1_SIZE);
+		}
+	}	
 }
 
 static int eth_init(void)

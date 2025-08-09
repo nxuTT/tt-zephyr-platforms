@@ -20,5 +20,6 @@ int LoadEthFwCfg(uint32_t eth_inst, uint32_t ring, uint32_t eth_enabled,
 	uint8_t *fw_cfg_image, uint32_t fw_cfg_size);
 
 void ReleaseEthReset(uint32_t eth_inst, uint32_t ring);
+void wipe_erisc_l1(uint8_t tensix_x, uint8_t tensix_y);
 
 #endif
