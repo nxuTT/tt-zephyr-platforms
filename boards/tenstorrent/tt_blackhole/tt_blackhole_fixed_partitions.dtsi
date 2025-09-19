@@ -76,12 +76,12 @@ partitions {
 		read-only;
 	};
 
-	bmfw: partition@4c000 {
+	/* bmfw: partition@4c000 {
 		label = "bmfw";
 		reg = <0x4c000 DT_SIZE_K(68)>;
 		binary-path = "$BUILD_DIR/dmc/zephyr/zephyr.signed.bin";
 		read-only;
-	};
+	}; */
 
 	flshinfo: partition@59000 {
 		label = "flshinfo";
