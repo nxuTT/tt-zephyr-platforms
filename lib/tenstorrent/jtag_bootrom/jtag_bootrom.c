@@ -286,7 +286,7 @@ void jtag_bootrom_soft_reset_arc(struct bh_chip *chip)
 	jtag_axi_write32(dev, RESET_UNIT_ARC_MISC_CNTL_REG_ADDR, 0);
 
 	/* Write reset_vector (rom_memory[0]) */
-	jtag_axi_write32(dev, ROM_MEMORY_MEM_BASE_ADDR, 0x84);
+	jtag_axi_write32(dev, ROM_MEMORY_MEM_BASE_ADDR, 0x10077040);
 
 	/* store DMC init done timestamp */
 	if (perst_seen) {

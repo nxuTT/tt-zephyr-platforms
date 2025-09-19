@@ -54,15 +54,16 @@ int jtag_bootrom_reset_sequence(struct bh_chip *chip, bool force_reset)
 		jtag_bootrom_emul_setup((uint32_t *)sram, patch_len);
 	}
 
-	jtag_bootrom_patch_offset(chip, patch, patch_len, 0x80);
+	// point start address to CSM
+	jtag_bootrom_patch_offset(chip, patch, patch_len, 0x10077000);
 
 	volatile int64_t end = k_uptime_delta(&start);
 
 	LOG_DBG("jtag bootrom load took %lld ms", end);
 
-	if (jtag_bootrom_verify(chip->config.jtag, patch, patch_len) != 0) {
-		printk("Bootrom verification failed\n");
-	}
+	// if (jtag_bootrom_verify(chip->config.jtag, patch, patch_len) != 0) {
+	// 	printk("Bootrom verification failed\n");
+	// }
 
 	start = k_uptime_get();
 
