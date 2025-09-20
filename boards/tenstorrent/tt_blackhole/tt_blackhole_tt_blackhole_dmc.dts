@@ -44,13 +44,13 @@
 		gpio39 {
 			compatible = "zephyr,gpio-line";
 			label = "GPIO pin representing strap GPIO39_SPI_MODE_1";
-			gpios = <&gpiox2 4 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpiox2 4 GPIO_ACTIVE_LOW>;
 		};
 
 		gpio40 {
 			compatible = "zephyr,gpio-line";
 			label = "GPIO pin representing strap GPIO40_SPI_DDR_EN";
-			gpios = <&gpiox2 5 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpiox2 5 GPIO_ACTIVE_LOW>;
 		};
 	};
 };
