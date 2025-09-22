@@ -266,6 +266,43 @@ uint32_t get_dm_init_duration(void)
 	return delta_cycles;
 }
 
+void jtag_bootrom_soft_reset_arc_iccm(struct bh_chip *chip)
+{
+#ifdef CONFIG_JTAG_LOAD_BOOTROM
+	const struct device *dev = chip->config.jtag;
+
+	jtag_reset(dev);
+
+	/* HALT THE ARC CORE!!!!! */
+
+	/* NOTE(drosen): Assuming that it is okay to set the register to 0b1111 << 4, this saves
+	 * some cycles but may lead to errors in the future.
+	 */
+	jtag_axi_write32(dev, RESET_UNIT_ARC_MISC_CNTL_REG_ADDR, GENMASK(7, 4));
+	/* Reset it back to zero */
+	/* NOTE(drosen): Assuming that it is okay to set the register back to zero, this saves some
+	 * cycles but may lead to errors in the future.
+	 */
+	jtag_axi_write32(dev, RESET_UNIT_ARC_MISC_CNTL_REG_ADDR, 0);
+
+	/* Write reset_vector (rom_memory[0]) */
+	jtag_axi_write32(dev, ROM_MEMORY_MEM_BASE_ADDR, 0x40);
+
+	/* Toggle soft-reset */
+	/* ARC_MISC_CNTL.soft_reset (12th bit) */
+	/* NOTE(drosen): Assuming that it is okay to set the register to 1 << 12, this saves some
+	 * cycles but may lead to errors in the future.
+	 */
+	jtag_axi_write32(dev, RESET_UNIT_ARC_MISC_CNTL_REG_ADDR, BIT(12));
+
+	/* Set to 0 */
+	/* NOTE(drosen): Assuming that it is okay to set the register back to zero, this saves some
+	 * cycles but may lead to errors in the future.
+	 */
+	jtag_axi_write32(dev, RESET_UNIT_ARC_MISC_CNTL_REG_ADDR, 0);
+#endif
+}
+
 void jtag_bootrom_soft_reset_arc(struct bh_chip *chip)
 {
 #ifdef CONFIG_JTAG_LOAD_BOOTROM

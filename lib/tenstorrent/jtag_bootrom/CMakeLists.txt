@@ -14,4 +14,10 @@ generate_inc_file_for_target(
     ${gen_dir}/bootcode.h
 )
 
+generate_inc_file_for_target(
+    ${ZEPHYR_CURRENT_LIBRARY}
+    ${ZEPHYR_CURRENT_MODULE_DIR}/zephyr/blobs/mini_bootcode.bin
+    ${gen_dir}/mini_bootcode.h
+)
+
 zephyr_library_include_directories(${gen_dir})

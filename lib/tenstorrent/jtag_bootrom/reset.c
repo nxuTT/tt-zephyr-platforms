@@ -16,6 +16,10 @@ __aligned(sizeof(uint32_t)) static const uint8_t bootcode[] = {
 #include "bootcode.h"
 };
 
+__aligned(sizeof(uint32_t)) static const uint8_t mini_bootcode[] = {
+#include "mini_bootcode.h"
+};
+
 /* discarded if no zephyr,gpio-emul exists or if CONFIG_JTAG_VERIFY_WRITE=n */
 __aligned(sizeof(uint32_t)) static uint8_t sram[sizeof(bootcode)];
 
@@ -53,6 +57,12 @@ int jtag_bootrom_reset_sequence(struct bh_chip *chip, bool force_reset)
 	if (DT_HAS_COMPAT_STATUS_OKAY(zephyr_gpio_emul) && IS_ENABLED(CONFIG_JTAG_VERIFY_WRITE)) {
 		jtag_bootrom_emul_setup((uint32_t *)sram, patch_len);
 	}
+
+	// load mini_bootcode into ICCM and have it run
+	const uint32_t *const mini_bootcode_patch = (const uint32_t *)mini_bootcode;
+	const size_t mini_patch_len = sizeof(mini_bootcode) / sizeof(uint32_t);	
+	jtag_bootrom_patch_offset(chip, mini_bootcode_patch, mini_patch_len, 0x40);	
+	jtag_bootrom_soft_reset_arc_iccm(chip);
 
 	// point start address to CSM
 	jtag_bootrom_patch_offset(chip, patch, patch_len, 0x10077000);
