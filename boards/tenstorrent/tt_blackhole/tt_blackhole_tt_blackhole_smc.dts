@@ -139,9 +139,9 @@
 	status = "okay";
 };
 
-&pll2 {
-	status = "okay";
-};
+/* &pll2 {
+	status = "disabled";
+}; */
 
 &pll3 {
 	status = "okay";

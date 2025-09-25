@@ -252,7 +252,7 @@
 		status = "disabled";
 	};
 
-	pll2: pll@80020300 {
+	/*pll2: pll@80020300 {
 		compatible = "tenstorrent,bh-clock-control";
 
 		reg = <0x80020300 0x100>;
@@ -267,7 +267,7 @@
 		post_divs = <1 0 0 0>;
 		use_post_divs = <1 1 1 1>;
 		status = "disabled";
-	};
+	}; */
 
 	pll3: pll@80020400 {
 		compatible = "tenstorrent,bh-clock-control";

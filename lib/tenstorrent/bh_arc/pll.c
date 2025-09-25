@@ -357,6 +357,9 @@ int PLLInit(void)
 	PLL_CNTL_PLL_CNTL_0_reg_u pll_cntl_0;
 
 	for (PLLNum i = 0; i < PLL_COUNT; i++) {
+		if (i == 2) {
+			continue;
+		}
 		pll_cntl_0.val = ReadReg(GET_PLL_CNTL_ADDR(i, PLL_CNTL_0));
 		/* Before turning off PLL, bypass PLL so glitch free mux has no chance to switch */
 		pll_cntl_0.f.bypass = 0;
@@ -366,12 +369,18 @@ int PLLInit(void)
 	WaitUs(3);
 
 	for (PLLNum i = 0; i < PLL_COUNT; i++) {
+		if (i == 2) {
+			continue;
+		}
 		/* power down PLL, disable PLL reset */
 		pll_cntl_0.val = 0;
 		WriteReg(GET_PLL_CNTL_ADDR(i, PLL_CNTL_0), pll_cntl_0.val);
 	}
 
 	for (PLLNum i = 0; i < PLL_COUNT; i++) {
+		if (i == 2) {
+			continue;
+		}
 		ConfigPLLVco(i, &kPLLInitialSettings[i]);
 	}
 
@@ -382,16 +391,25 @@ int PLLInit(void)
 	/* power up PLLs */
 	pll_cntl_0.f.pd = 1;
 	for (PLLNum i = 0; i < PLL_COUNT; i++) {
+		if (i == 2) {
+			continue;
+		}
 		WriteReg(GET_PLL_CNTL_ADDR(i, PLL_CNTL_0), pll_cntl_0.val);
 	}
 
 	/* wait for PLLs to lock */
 	for (PLLNum i = 0; i < PLL_COUNT; i++) {
+		if (i == 2) {
+			continue;
+		}
 		WaitPLLLock(i);
 	}
 
 	/* setup external postdivs */
 	for (PLLNum i = 0; i < PLL_COUNT; i++) {
+		if (i == 2) {
+			continue;
+		}
 		ConfigExtPostDivs(i, &kPLLInitialSettings[i]);
 	}
 
@@ -400,6 +418,9 @@ int PLLInit(void)
 	/* disable PLL bypass */
 	pll_cntl_0.f.bypass = 1;
 	for (PLLNum i = 0; i < PLL_COUNT; i++) {
+		if (i == 2) {
+			continue;
+		}
 		WriteReg(GET_PLL_CNTL_ADDR(i, PLL_CNTL_0), pll_cntl_0.val);
 	}
 
