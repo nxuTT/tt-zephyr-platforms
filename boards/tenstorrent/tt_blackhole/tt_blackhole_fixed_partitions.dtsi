@@ -111,4 +111,10 @@ partitions {
 		binary-path = "$BUILD_DIR/recovery/zephyr/zephyr.bin";
 		read-only;
 	};
+
+	trootfw: trootfw_partition@10050000 {
+		label = "trootfw";
+		reg = < 0x10050000 DT_SIZE_K(92) >;
+		binary-path = "$ROOT/zephyr/blobs/boot.aic.bin";
+	};
 };

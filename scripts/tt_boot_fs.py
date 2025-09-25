@@ -982,6 +982,13 @@ def _generate_bootfs_yaml(
                 "offset": offset,
                 "binary": path,
             }
+        elif label == "trootfw":
+            image_entry = {
+                "name": label,
+                "offset": offset,
+                "binary": path,
+                "executable": True
+            }
         else:
             image_entry = {
                 "name": label,
