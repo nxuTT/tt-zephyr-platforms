@@ -69,14 +69,14 @@ void gpio_asic_reset_callback(const struct device *port, struct gpio_callback *c
 	perst_seen = true;
 	perst_start_time = k_cycle_get_32();
 
-	ARRAY_FOR_EACH_PTR(BH_CHIPS, chip) {
-		atomic_set(&chip->data.trigger_reset, true);
-		/* Set the bus cancel following the logic of (reset_triggered && !performing_reset)
-		 */
-		if (!chip->data.performing_reset) {
-			bh_chip_cancel_bus_transfer_set(chip);
-		}
-	}
+	// ARRAY_FOR_EACH_PTR(BH_CHIPS, chip) {
+	// 	atomic_set(&chip->data.trigger_reset, true);
+	// 	/* Set the bus cancel following the logic of (reset_triggered && !performing_reset)
+	// 	 */
+	// 	if (!chip->data.performing_reset) {
+	// 		bh_chip_cancel_bus_transfer_set(chip);
+	// 	}
+	// }
 	tt_event_post(TT_EVENT_WAKE);
 }
 
@@ -167,9 +167,9 @@ int jtag_bootrom_init(struct bh_chip *chip)
 			return ret;
 		}
 
-		gpio_init_callback(&preset_cb_data, gpio_asic_reset_callback,
-				   BIT(preset_trigger.pin));
-		gpio_add_callback(preset_trigger.port, &preset_cb_data);
+		// gpio_init_callback(&preset_cb_data, gpio_asic_reset_callback,
+				//    BIT(preset_trigger.pin));
+		// gpio_add_callback(preset_trigger.port, &preset_cb_data);
 	}
 
 	/* Active LOW, so will be false if high */

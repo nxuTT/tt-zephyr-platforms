@@ -34,7 +34,7 @@
 
 #define RESET_UNIT_ARC_PC_CORE_0 0x80030C00
 
-#define INITIAL_FAN_SPEED 35
+#define INITIAL_FAN_SPEED 100
 
 LOG_MODULE_REGISTER(main, CONFIG_TT_APP_LOG_LEVEL);
 
@@ -587,33 +587,31 @@ int main(void)
 		}
 
 		/* handler for PERST */
-		ARRAY_FOR_EACH_PTR(BH_CHIPS, chip) {
-			if (atomic_set(&chip->data.trigger_reset, false)) {
-				chip->data.performing_reset = true;
-				chip->data.last_cm2dm_seq_num_valid = false;
+		// ARRAY_FOR_EACH_PTR(BH_CHIPS, chip) {
+		// 	if (atomic_set(&chip->data.trigger_reset, false)) {
+		// 		chip->data.performing_reset = true;
+		// 		/*
+		// 		 * Set the bus cancel following the logic of (reset_triggered &&
+		// 		 * !performing_reset)
+		// 		 */
+		// 		bh_chip_cancel_bus_transfer_clear(chip);
 
-				/*
-				 * Set the bus cancel following the logic of (reset_triggered &&
-				 * !performing_reset)
-				 */
-				bh_chip_cancel_bus_transfer_clear(chip);
+		// 		jtag_bootrom_reset_asic(chip);
+		// 		jtag_bootrom_soft_reset_arc(chip);
+		// 		jtag_bootrom_teardown(chip);
 
-				jtag_bootrom_reset_asic(chip);
-				jtag_bootrom_soft_reset_arc(chip);
-				jtag_bootrom_teardown(chip);
-
-				/*
-				 * Set the bus cancel following the logic of (reset_triggered &&
-				 * !performing_reset)
-				 */
-				if (atomic_get(&chip->data.trigger_reset)) {
-					bh_chip_cancel_bus_transfer_set(chip);
-				}
-				chip->data.therm_trip_count = 0;
-				chip->data.arc_hang_pc = 0;
-				chip->data.performing_reset = false;
-			}
-		}
+		// 		/*
+		// 		 * Set the bus cancel following the logic of (reset_triggered &&
+		// 		 * !performing_reset)
+		// 		 */
+		// 		if (atomic_get(&chip->data.trigger_reset)) {
+		// 			bh_chip_cancel_bus_transfer_set(chip);
+		// 		}
+		// 		chip->data.therm_trip_count = 0;
+		// 		chip->data.arc_hang_pc = 0;
+		// 		chip->data.performing_reset = false;
+		// 	}
+		// }
 
 		/* handler for PGOOD */
 		ARRAY_FOR_EACH_PTR(BH_CHIPS, chip) {
