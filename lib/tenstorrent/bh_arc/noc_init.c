@@ -116,10 +116,10 @@ static void ProgramBroadcastExclusion(uint16_t disabled_tensix_columns)
 		BIT(NOC0_X_TO_NOC1(0)) | BIT(NOC0_X_TO_NOC1(8)) | BIT(NOC0_X_TO_NOC1(9)),
 	};
 
-	/* Disable broadcast to ethernet row, PCIE/SERDES row. */
+	/* Disable broadcast to ethernet row, PCIE/SERDES row. Disable additional rows for eclipse. */
 	static const uint32_t router_cfg_3[NUM_NOCS] = {
-		BIT(0) | BIT(1),
-		BIT(NOC0_Y_TO_NOC1(0)) | BIT(NOC0_Y_TO_NOC1(1)),
+		BIT(0) | BIT(1) | BIT(9) | BIT(10),
+		BIT(NOC0_Y_TO_NOC1(0)) | BIT(NOC0_Y_TO_NOC1(1)) | BIT(NOC0_Y_TO_NOC1(9)) | BIT(NOC0_Y_TO_NOC1(10)),
 	};
 
 	/* Update for any disabled Tensix columns. */
@@ -151,6 +151,10 @@ static bool GetTileClkDisable(uint8_t px, uint8_t py)
 {
 	/* Tile clock disable for disabled Tensix columns */
 	if (px >= 1 && px <= 14 && py >= 2) {
+		if (py == 4 || py == 6) {
+			/* For ecplise, harvest row 10,11 */
+			return true;
+		}
 		uint8_t tensix_x = px - 1;
 
 		return !IS_BIT_SET(tile_enable.tensix_col_enabled, tensix_x);
@@ -169,6 +173,11 @@ static bool GetTileClkDisable(uint8_t px, uint8_t py)
 		uint8_t gddr_inst = 4 + py / 3;
 
 		return !IS_BIT_SET(tile_enable.gddr_enabled, gddr_inst);
+	} else if (px == 15) {
+		/* harvest all L2CPUs */
+		if (py == 5 || py == 6 || py == 9 || py == 10) {
+			return true;
+		}
 	}
 	return false;
 }
